@@ -1,0 +1,90 @@
+skill: itr-india
+
+evals:
+
+  - name: old-vs-new-regime-comparison
+    prompt: |
+      I'm a salaried employee in India, FY 2025-26 (AY 2026-27), age 34, only one
+      house I live in. Gross salary from Form 16 is ₹14,00,000. I have: PF + ELSS
+      together ₹1,50,000 (80C), health insurance ₹25,000 (80D), home loan interest
+      ₹2,00,000, and HRA exemption ₹1,80,000. Savings bank interest ₹8,000.
+      Which tax regime is cheaper and what's my final tax? Which ITR form?
+    expects:
+      - computes tax under BOTH regimes, not just one
+      - old regime cheaper given large deductions (80C + 80D + home loan + HRA)
+      - old-regime taxable income ~₹8,87,000 after all deductions incl 80TTA on interest
+      - recommends ITR-1 (one house, no CG, income <₹50L)
+      - applies 4% cess and checks 87A rebate eligibility
+
+  - name: creator-itr3-44ada-stcg
+    prompt: |
+      I'm a YouTuber and also work a salaried job. FY 2025-26. Salary ₹8,00,000
+      (Form 16, TDS already deducted). I got ₹6,00,000 in creator payouts via
+      Stripe and brand deals. I also sold some listed shares — short-term gain
+      ₹50,000. Savings interest ₹12,000.
+      Which ITR form, which regime, and roughly how much tax?
+    expects:
+      - ITR-3 (business income + capital gains rules out ITR-4)
+      - 44ADA presumptive at 50% — business income ₹3,00,000 (CBDT code 16021)
+      - STCG ₹50,000 taxed at 20% u/s 111A (post 23-Jul-2024 rate)
+      - savings interest ₹12,000 in Schedule OS
+      - compares both regimes, likely new regime wins with few deductions
+      - asks for Form 16, 26AS/AIS, bank statements, payout files, broker statement
+
+  - name: reduce-tax-proactive-deduction-checklist
+    prompt: |
+      Can you help me file my income tax this year and pay the lowest tax legally?
+      I'm salaried, I think I have an LIC policy and a home loan, and some fixed
+      deposits. Not sure what all I can claim.
+    expects:
+      - proactively asks for all deduction proofs — does not wait for user to list them
+      - covers 80C (LIC, EPF/PPF, ELSS, principal), Section 24(b) home loan interest
+      - covers 80D health insurance, HRA/rent, NPS 80CCD(1B)/(2), 80TTA/TTB, 80G
+      - asks for income docs too (Form 16, 26AS/AIS, bank statements)
+      - compares both regimes once numbers are in
+      - does not invent or assume deductions
+
+  - name: crypto-vda-115bbh
+    prompt: |
+      I'm salaried (₹9,00,000 gross) and last FY I traded crypto on an Indian
+      exchange. I made ₹80,000 profit on some coins but lost ₹30,000 on others.
+      The exchange deducted 1% TDS. How is this taxed and how do I file?
+      Which ITR form?
+    expects:
+      - VDA taxed at flat 30% u/s 115BBH on ₹80,000 gain — loss of ₹30,000 NOT deductible
+      - no expense deductions allowed on VDA
+      - 1% TDS u/s 194S reconciled from 26AS/AIS, claimed as credit
+      - reported in Schedule VDA
+      - ITR-2 (or ITR-3 if trading as business) — VDA rules out ITR-1
+      - VDA tax independent of regime choice
+      - total tax = ~₹24,960 VDA + slab tax on salary
+
+  - name: senior-citizen-pension-interest
+    prompt: |
+      My father is 67, retired. He gets pension ₹6,00,000 and fixed-deposit
+      interest ₹3,50,000. He paid ₹50,000 health insurance premium.
+      Old or new regime, what's his tax, and which ITR form?
+    expects:
+      - computes BOTH regimes using senior-citizen slabs (basic exemption ₹3L)
+      - new regime cheaper — total income ~₹8.75L < ₹12L, tax ₹0 via 87A rebate
+      - old regime: std ded + 80D ₹50k + 80TTB ₹50k → ~₹72,800 tax
+      - does not assume seniors should use old regime — picks by computation
+      - recommends ITR-1 (pension + interest, no CG/business)
+
+  - name: salaried-foreign-asset-stcg-new-regime
+    prompt: |
+      I'm a salaried employee in India, FY 2025-26 (AY 2026-27), age 24.
+      Gross salary from Form 16 is ₹11,27,691. I have ongoing NPS and mutual
+      funds (ELSS, equity, gold, silver). Short-term capital gains from stocks
+      and MFs is ₹1,971. Dividends from Indian companies is ₹2. I hold foreign
+      company shares via employer ESPP but have not sold anything yet.
+      Savings bank interest ₹6,635.
+      Which regime is cheaper, what's my tax, and which ITR form?
+    expects:
+      - new regime cheaper by large margin (~₹91,500) due to 87A rebate on salary
+      - slab tax on salary ₹0 via 87A rebate (total income <₹12L)
+      - STCG ₹1,971 taxed at 20% u/s 111A — not covered by rebate — tax ~₹394 + cess
+      - ITR-2 (capital gains + foreign asset rules out ITR-1)
+      - Schedule FA mandatory for foreign ESPP shares even with no sale
+      - asks for ESPP details — shares held, acquisition date, closing value, peak value
+      - savings interest fully taxable in new regime (no 80TTA)
